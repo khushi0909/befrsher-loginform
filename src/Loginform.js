@@ -3,6 +3,7 @@ import { useState } from 'react';
 import {Formik,Form,Field,ErrorMessage} from 'formik'
 import clsx from 'clsx';
 import * as Yup from 'yup'
+import CustomInput from './CustomInput';
 
 const initialValues={
     phone:'',
