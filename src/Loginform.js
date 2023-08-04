@@ -26,13 +26,28 @@ const validationSchema = Yup.object({
         then:Yup.number().nullable().notRequired(),
         otherwise:Yup.number().required()
     }),
-    password:Yup.string().min(8,
-        'password must contain 8 or more characters with at least one of each: uppercase, lowercase, number and special'
-          )
-          .minLowercase(1, 'password must contain at least 1 lower case letter')
-          .minUppercase(1, 'password must contain at least 1 upper case letter')
-          .minNumbers(1, 'password must contain at least 1 number')
-          .minSymbols(1, 'password must contain at least 1 special character').when("otp",{
+    password:Yup
+    .string()
+    .required('Password Required')
+    .min(8, 'Password too short')
+    .test(
+      'isValidPass',
+      'Passowrd must be 8 char (One UpperCase & One Symbol)',
+      (value: any, context: any) => {
+        const hasUpperCase = /[A-Z]/.test(value);
+        const hasNumber = /[0-9]/.test(value);
+        const hasLowerCase = /[a-z]/.test(value);
+        const hasSymbole = /["!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"]/.test(value);
+        let validConditions = 0;
+        const numberOfMustBeValidConditions = 3;
+        const conditions = [hasUpperCase, hasLowerCase, hasNumber, hasSymbole];
+        conditions.forEach(condition => (condition ? validConditions++ : null));
+        if (validConditions >= numberOfMustBeValidConditions) {
+          return true;
+        }
+        return false;
+      },
+    ).when("otp",{
             is:(otp)=>true,
             then:Yup.string().nullable().notRequired(),
             otherwise:Yup.string().required()
